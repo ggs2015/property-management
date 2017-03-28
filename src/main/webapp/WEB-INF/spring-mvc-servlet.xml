@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans    
+      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd    
+      http://www.springframework.org/schema/context    
+      http://www.springframework.org/schema/context/spring-context.xsd    
+      http://www.springframework.org/schema/mvc    
+      http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+<!-- 
+	<mvc:default-servlet-handler/> -->
+    <!-- spring mvc对静态资源的访问 -->
+	<mvc:resources location="/resources/" mapping="/resources/**" />
+
+	<!-- 需要扫描带注解类的包 -->
+	<context:component-scan base-package="com.easylife.property.management" />
+	<mvc:annotation-driven />  
+	<!-- 对于@RequestMapping标签的解析 可选配置 -->
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+	<!-- 视图解析器 -->
+	<bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="cache" value="false" /> 
+       <property name="suffix" value=".ftl"/>
+       <property name="contentType" value="text/html;charset=UTF-8" />  
+       <property name="viewClass"
+            value="org.springframework.web.servlet.view.freemarker.FreeMarkerView" />
+       <property name="requestContextAttribute" value="request" />
+       <property name="order" value="1"/>
+    </bean>
+    
+    <!-- Freemarker配置 -->  
+	<bean id="freemarkerConfig"  
+      	class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">  
+	    <property name="templateLoaderPath" value="WEB-INF/page/" /> 
+	    <property name="defaultEncoding" value="UTF-8" /> 
+	    <!-- 
+	    <property name="freemarkerSettings">  
+	        <props>  
+	            <prop key="template_update_delay">0</prop>  
+	            <prop key="default_encoding">UTF-8</prop>  
+	            <prop key="number_format">0.##########</prop>  
+	            <prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>  
+	            <prop key="classic_compatible">true</prop>  
+	            <prop key="template_exception_handler">ignore</prop>  
+	        </props>  
+	    </property>   -->
+	</bean>  
+    <!-- 登陆拦截器配置 -->
+	<mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/resources/**"/>
+			<mvc:exclude-mapping path="/toLogin"/>
+			<mvc:exclude-mapping path="/getVerificationCode"/>
+			<mvc:exclude-mapping path="/login"/>
+			<mvc:exclude-mapping path="/loginOut"/>
+            <bean id="loginInterceptor" class="com.easylife.property.management.controller.LoginInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+</beans>

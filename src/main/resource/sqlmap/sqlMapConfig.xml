@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig
+        PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+	<settings cacheModelsEnabled="false" enhancementEnabled="true"
+		lazyLoadingEnabled="true" maxRequests="2048" maxSessions="1024"
+		maxTransactions="512" useStatementNamespaces="false" />
+		
+	<sqlMap resource="sqlmap/sqlmap-end-user.xml" />
+	<sqlMap resource="sqlmap/sqlmap-group-user-residential.xml" />
+	<sqlMap resource="sqlmap/sqlmap-residential-area-info.xml" />
+	<sqlMap resource="sqlmap/sqlmap-house-info.xml" />
+	<sqlMap resource="sqlmap/sqlmap-management-fee-info.xml" />
+	<sqlMap resource="sqlmap/sqlmap-management-fee-detail.xml" />
+	<sqlMap resource="sqlmap/sqlmap-payment-detail.xml" />
+	<sqlMap resource="sqlmap/sqlmap-group-user-house.xml" />
+	<sqlMap resource="sqlmap/sqlmap-wy-repair.xml" />
+</sqlMapConfig>

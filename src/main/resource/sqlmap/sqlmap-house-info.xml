@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="houseInfoModel">
+	<typeAlias alias="houseInfoModel" type="com.easylife.property.management.model.HouseInfoModel"/>
+	<typeAlias alias="HouseInfoVo" type="com.easylife.property.management.vo.HouseInfoVo"/>
+	
+	
+	<resultMap class="houseInfoModel" id="houseInfoModelMap">
+		<result column="id" property="houseId"/>
+		<result column="residential_area_id" property="residentialId"/>
+		<result column="building" property="buildingId"/>
+		<result column="house_number" property="houseNumber"/>
+		<result column="house_area" property="houseArea"/>
+	</resultMap>
+
+	<select id="getBuildingByResidential" parameterClass="long" resultClass="string">
+		select DISTINCT building
+			from house_info
+			where residential_area_id = #residentialId#
+			and is_deleted = 0;
+	</select>
+	
+	<select id="getHouseInfo" parameterClass="HouseInfoVo" resultMap="houseInfoModelMap">
+		select id,residential_area_id,building,house_number,house_area
+			from house_info
+			where residential_area_id = #residentialId#
+			and building = #buildingId#
+			<isNotEmpty prepend="AND" property="roomId" >
+				house_number = #roomId#
+		   </isNotEmpty>
+			and is_deleted = 0;
+	</select>
+	
+	<select id="countHouseByResidentialId" parameterClass="long" resultMap="houseInfoModelMap">
+		select id,residential_area_id,building,house_number,house_area
+			from house_info
+			where residential_area_id = #residentialId#
+			and is_deleted = 0;
+	</select>
+	<!-- <insert id="insertUser" parameterClass="endUserInfo">
+		insert into end_user(user_name,user_sex,user_phone,user_role,identity_card_no,create_time,is_deleted)
+		values(#userName#,#sex#,#userPhone#,#roleId#,#identityCardId#,NOW(),0)
+		<selectKey resultClass="long" keyProperty="id">  
+      	  SELECT LAST_INSERT_ID() AS id 
+		</selectKey>;
+	</insert> -->
+
+</sqlMap>

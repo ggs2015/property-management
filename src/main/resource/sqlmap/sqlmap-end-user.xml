@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="endUser">
+	<typeAlias alias="endUserInfo" type="com.easylife.property.management.model.EndUserInfo"/>
+	
+	<resultMap class="endUserInfo" id="endUserInfoMap">
+		<result column="id" property="id"/>
+		<result column="user_name" property="userName"/>
+		<result column="user_role" property="roleId"/>
+		<result column="user_phone" property="userPhone"/>
+		<result column="nick_name" property="nickName"/>
+		<result column="weixin_no" property="weixinNo"/>
+	</resultMap>
+	
+	<resultMap class="endUserInfo" id="blackUserMap">
+		<result column="id" property="id"/>
+		<result column="nick_name" property="nickName"/>
+		<result column="user_name" property="userName"/>
+		<result column="weixin_no" property="weixinNo"/>
+		<result column="user_phone" property="userPhone"/>
+	</resultMap>
+
+	<select id="getUserByPhoneNo" parameterClass="string" resultMap="endUserInfoMap">
+		select id,user_name,user_role,user_phone,nick_name,weixin_no 
+			from end_user
+			where user_phone = #phoneNo#
+			and is_deleted = 0;
+	</select>
+	
+	<insert id="insertUser" parameterClass="endUserInfo">
+		insert into end_user(user_name,user_sex,user_phone,user_role,identity_card_no,create_time,is_deleted)
+		values(#userName#,#sex#,#userPhone#,#roleId#,#identityCardId#,NOW(),0)
+		<selectKey resultClass="long" keyProperty="id">  
+      	  SELECT LAST_INSERT_ID() AS id 
+		</selectKey>;
+	</insert>
+
+	<select id="getUserByIds" parameterClass="java.util.List" resultMap="endUserInfoMap">
+		select id,user_name,user_role,user_phone,nick_name,weixin_no
+			from end_user
+			where id in
+			<iterate conjunction="," open="(" close=")">
+  					#ids[]#
+ 				</iterate>
+			and is_deleted = 0;
+	</select>
+	
+	<select id="queryBlackUser"  resultMap="blackUserMap">
+		SELECT e.id,e.user_name,e.weixin_no,e.user_phone,nick_name FROM end_user e
+		WHERE  e.is_black = 1;
+	</select>
+	
+	<update id="addBlack" parameterClass="java.util.Map">
+		update end_user
+		set is_black = 1
+		where id = #userId#;
+	</update>
+	
+	<update id="removeBlack" parameterClass="java.util.Map">
+		update end_user
+		set is_black = 0
+		where id = #userId#;
+	</update>
+</sqlMap>

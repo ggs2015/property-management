@@ -1,0 +1,44 @@
+<!-- - Copyright 1999-2011 Alibaba Group. - - Licensed under the Apache License, 
+	Version 2.0 (the "License"); - you may not use this file except in compliance 
+	with the License. - You may obtain a copy of the License at - - http://www.apache.org/licenses/LICENSE-2.0 
+	- - Unless required by applicable law or agreed to in writing, software - 
+	distributed under the License is distributed on an "AS IS" BASIS, - WITHOUT 
+	WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. - See the 
+	License for the specific language governing permissions and - limitations 
+	under the License. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<bean id="userService"
+		class="com.easylife.property.management.service.impl.UserServiceImpl"
+		autowire="byName" />
+	
+	<bean id="smsService"
+		class="com.easylife.property.management.service.impl.SmsServiceImpl"
+		autowire="byName" />
+	
+	<bean id="residentialService"
+		class="com.easylife.property.management.service.impl.ResidentialServiceImpl"
+		autowire="byName" />
+		
+	<bean id="managementFeeService"
+		class="com.easylife.property.management.service.impl.ManagementFeeServiceImpl"
+		autowire="byName" />
+			
+	<!-- 每天统计接口调用情况并发邮件，报表定时任务线程池 -->
+	<!--
+	<bean id="reportTaskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		线程池维护线程的最少数量
+		<property name="corePoolSize" value="5" />
+		线程池维护线程所允许的空闲时间
+		<property name="keepAliveSeconds" value="300000" />
+		线程池维护线程的最大数量
+		<property name="maxPoolSize" value="500" />
+		线程池所使用的缓冲队列
+		<property name="queueCapacity" value="1000" />
+	</bean>
+	-->
+</beans>

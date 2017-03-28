@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="residential">
+	<typeAlias alias="residentialModel" type="com.easylife.property.management.model.ResidentialModel"/>
+	
+	<resultMap class="residentialModel" id="residentialModelMap">
+		<result column="id" property="residentialId"/>
+		<result column="residential_area_name" property="residentialName"/>
+	</resultMap>
+
+	<select id="getResidentialByUserId" parameterClass="long" resultMap="residentialModelMap">
+		select r.id, r.residential_area_name
+			from residential_area_info r
+			inner join group_user_residential g on r.id = g.residential_id
+			where g.end_user_id = #endUserId#
+			and r.is_deleted = 0
+			and g.is_deleted = 0;
+	</select>
+	
+	<insert id="insertResidential" parameterClass="residentialModel">
+		insert into residential_area_info(residential_area_name,province,city,area,create_time,is_deleted)
+		values(#residentialName#,#province#,#city#,#area#,NOW(),0)
+		<selectKey resultClass="long" keyProperty="id" type="pre">  
+      	<![CDATA[  SELECT LAST_INSERT_ID() AS id     ]]>
+		</selectKey>;
+	</insert>
+
+</sqlMap>

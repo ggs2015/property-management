@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="groupUserAndResidential">
+	<typeAlias alias="userAndResidentialModel" type="com.easylife.property.management.model.UserAndResidentialModel"/>
+	
+	<resultMap class="userAndResidentialModel" id="userAndResidentialModelMap">
+		<result column="end_user_id" property="endUserId"/>
+		<result column="residential_id" property="residentialId"/>
+	</resultMap>
+
+	<!-- 用户和管理的小区的对应关系 -->
+	<insert id="insertGroupUserAndResidential" parameterClass="userAndResidentialModel">
+		insert into group_user_residential(end_user_id,residential_id,create_time,is_deleted)
+		values(#endUserId#,#residentialId#,NOW(),0)
+		<selectKey resultClass="long" keyProperty="id" type="pre">  
+      	<![CDATA[  SELECT LAST_INSERT_ID() AS id     ]]>
+		</selectKey>;
+	</insert>
+
+</sqlMap>

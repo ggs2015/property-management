@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="groupUserHouse">
+	<typeAlias alias="GroupUserAndHouseModel" type="com.easylife.property.management.model.GroupUserAndHouseModel"/>
+	
+	<resultMap class="GroupUserAndHouseModel" id="GroupUserAndHouseMap">
+		<result column="id" property="id"/>
+		<result column="end_user_id" property="endUserId"/>
+		<result column="house_id" property="houseId"/>
+		<result column="nick_name" property="nickName"/>
+		<result column="weixin_no" property="weixinNo"/>
+	</resultMap>
+	
+	<resultMap class="GroupUserAndHouseModel" id="UserHouseInfoMap">
+		<result column="end_user_id" property="endUserId"/>
+		<result column="building" property="building"/>
+		<result column="house_number" property="houseNumber"/>
+	</resultMap>
+	
+	<resultMap class="GroupUserAndHouseModel" id="UserHouseBindInfoMap">
+		<result column="id" property="endUserId"/>
+		<result column="building" property="building"/>
+		<result column="house_number" property="houseNumber"/>
+		<result column="weixin_no" property="weixinNo"/>
+		<result column="user_name" property="userName"/>
+		<result column="user_phone" property="userPhone"/>
+		<result column="nick_name" property="nickName"/>
+	</resultMap>
+	
+	<select id="getHouseWeixinBindInfo" parameterClass="java.util.Map" resultMap="GroupUserAndHouseMap">
+		SELECT u.id,u.end_user_id,u.house_id,e.nick_name,e.weixin_no FROM group_user_house u
+		INNER JOIN end_user e ON u.end_user_id = e.id
+		INNER JOIN house_info h ON u.house_id = h.id
+		WHERE h.building = #building#
+		AND h.house_number = #houseNumber#
+		AND u.is_deleted = 0;
+	</select>
+	
+	<update id="unbindWeixinFromHouse" parameterClass="long">
+		UPDATE group_user_house
+		SET is_deleted = 1,
+		update_time = NOW()
+		WHERE id = #id#;
+	</update>
+	
+	<update id="unbindUserFromHouse" parameterClass="long">
+		UPDATE group_user_house
+		SET is_deleted = 1,
+		update_time = NOW()
+		WHERE end_user_id = #userId#;
+	</update>
+
+	<select id="getHouseInfoByUserId" parameterClass="java.util.List" resultMap="UserHouseInfoMap">
+		SELECT u.end_user_id,h.building,h.house_number FROM group_user_house u
+		INNER JOIN end_user e ON u.end_user_id = e.id
+		INNER JOIN house_info h ON u.house_id = h.id
+		WHERE u.end_user_id in
+		<iterate conjunction="," open="(" close=")">
+  					#userIdList[]#
+ 				</iterate>
+		AND u.is_deleted = 0;
+	</select>
+	
+	
+	<select id="getHouseUserInfo" parameterClass="java.util.Map" resultMap="UserHouseBindInfoMap">
+		SELECT h.building,h.house_number,e.id,e.user_name,e.weixin_no,e.user_phone,e.nick_name FROM group_user_house g 
+		INNER JOIN house_info h ON g.house_id = h.id
+		INNER JOIN end_user e ON g.end_user_id = e.id
+		WHERE h.residential_area_id = #residentialId#
+		AND h.building = #building#
+		AND h.house_number = #houseNumber#
+		AND (e.is_black is null or e.is_black = 0)
+		AND g.is_deleted = 0;
+	</select>
+	
+</sqlMap>

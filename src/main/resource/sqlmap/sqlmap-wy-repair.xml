@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="repair">
+
+	<typeAlias alias="RepairModel" type="com.easylife.property.management.model.RepairModel"/>
+	
+	<resultMap class="RepairModel" id="RepairModelMap">
+		<result column="id" property="id"/>
+		<result column="user_id" property="userId"/>
+		<result column="name" property="userName"/>
+		<result column="phone" property="phone"/>
+		<result column="matter" property="content"/>
+		<result column="type" property="type"/>
+		<result column="status" property="status"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="operator_id" property="operatorId"/>
+	</resultMap>
+	
+	<select id="queryRepairInfo" parameterClass="map" resultMap="RepairModelMap">
+		select id,user_id,name,phone,type,matter,status,create_time,update_time,operator_id
+		from wy_repair
+		where status = #status#
+	 	<isEqual property="status" compareValue="1">
+			order by create_time asc
+ 		</isEqual>
+ 		<isEqual property="status" compareValue="3">
+			order by update_time desc
+ 		</isEqual>
+		limit 50; 
+	</select>
+	
+	<update id="updateRepairInfo" parameterClass="java.util.Map">
+		update wy_repair set operator_id = #operatorId#,
+		update_time = NOW(),
+		status = 3
+		where id = #id#
+	</update>
+</sqlMap>

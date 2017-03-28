@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decorators defaultdir="/WEB-INF/layouts/"> 
+	<excludes>
+		<!-- 过滤静态资源 -->
+		<pattern>/resources/**</pattern>
+		<!-- 过滤登录页面 -->
+		<pattern>/toLogin</pattern>
+		<!-- 过滤异步ajax请求 -->
+		<pattern>/login</pattern>
+		<pattern>/addUser</pattern>
+		<pattern>/getHouseIdByBuilding</pattern>
+		<pattern>/unpaidInfo</pattern>
+		<pattern>/payFee</pattern>
+		<pattern>/queryInfo</pattern>
+		<pattern>/unwroteInfo</pattern>
+		<pattern>/writeReceipt</pattern>
+		<pattern>/historyPayRecord</pattern>
+		<pattern>/statisticsPaidInfo</pattern>
+		<pattern>/loginOut</pattern>
+		<pattern>/payFeeByMonthes</pattern>
+		<pattern>/queryRepairInfo</pattern>
+		<pattern>/repair</pattern>
+		<pattern>/queryHouseUser</pattern>
+		<pattern>/queryBlackUser</pattern>
+		<pattern>/addBlack</pattern>
+		<pattern>/removeBlack</pattern>
+	</excludes>
+	<decorator name="default" page="index.jsp">
+	    <pattern>/toAddUser</pattern>
+	    <pattern>/toUnpaidInfo</pattern>
+	    <pattern>/queryFee</pattern>
+	    <pattern>/toWroteReceiptInfo</pattern>
+	    <pattern>/toShowHistoryPayRecord</pattern>
+	    <pattern>/totalInfo</pattern>
+	    <pattern>/toStatisticsPaidInfo</pattern>
+	    <pattern>/statisticsUnpaidInfo</pattern>
+	    <pattern>/toUnbindWeixin</pattern>
+	    <pattern>/toRepair</pattern>
+	    <pattern>/toBlack</pattern>
+	    
+	</decorator>
+    
+</decorators>
+ 

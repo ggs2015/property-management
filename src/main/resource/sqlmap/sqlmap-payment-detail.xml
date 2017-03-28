@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="paymentDetail">
+	<typeAlias alias="PaymentDetailModel" type="com.easylife.property.management.model.PaymentDetailModel"/>
+	
+	<resultMap class="PaymentDetailModel" id="PaymentDetailModelMap">
+		<result column="id" property="id"/>
+		<result column="end_user_id" property="endUserId"/>
+		<result column="pay_method_type" property="payMethodType"/>
+		<result column="management_fee_detail_id" property="managementFeeDetailId"/>
+		<result column="is_success" property="isSuccess"/>
+	</resultMap>
+
+	<insert id="insertPaymentDetail" parameterClass="PaymentDetailModel">
+		insert into payment_detail(end_user_id,pay_method_type,management_fee_detail_id,is_success,create_time)
+		values(#endUserId#,#payMethodType#,#managementFeeDetailId#,#isSuccess#,NOW())
+		<selectKey resultClass="long" keyProperty="id">  
+      	  SELECT LAST_INSERT_ID() AS id 
+		</selectKey>;
+	</insert>
+	
+	<insert id="batchInsertPaymentDetail" parameterClass="list">
+		insert into payment_detail(end_user_id,pay_method_type,management_fee_detail_id,is_success,create_time)
+		values
+		<iterate conjunction=",">
+			(#paymentDetailModelList[].endUserId#,
+			#paymentDetailModelList[].payMethodType#,
+			#paymentDetailModelList[].managementFeeDetailId#,
+			#paymentDetailModelList[].isSuccess#,
+			NOW())
+		</iterate>;
+	</insert>
+</sqlMap>

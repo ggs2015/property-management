@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<!-- sqlMap dao定义 -->
+	
+	<bean id="pm_sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation">
+			<value>classpath:sqlmap/sqlMapConfig.xml</value>
+		</property>
+		<property name="dataSource" ref="dataSource_pm"/>
+	</bean>
+
+    <bean id="sqlMapClientTemplate" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+       <property name="sqlMapClient" ref="pm_sqlMapClient"/>
+    </bean>
+	
+	<!-- Dao定义 -->
+	<bean id="userDao" class="com.easylife.property.management.dao.impl.UserDaoImpl" autowire="byName">
+	</bean>
+	<bean id="residentialDao" class="com.easylife.property.management.dao.impl.ResidentialDaoImpl" autowire="byName">
+	</bean>
+	<bean id="userAndResidentialDao" class="com.easylife.property.management.dao.impl.UserAndResidentialDaoImpl" autowire="byName">
+	</bean>
+	<bean id="houseInfoDao" class="com.easylife.property.management.dao.impl.HouseInfoDaoImpl" autowire="byName">
+	</bean>
+	<bean id="managementFeeInfoDao" class="com.easylife.property.management.dao.impl.ManagementFeeInfoDaoImpl" autowire="byName">
+	</bean>
+	<bean id="managementFeeDetailDao" class="com.easylife.property.management.dao.impl.ManagementFeeDetailDaoImpl" autowire="byName">
+	</bean>
+	<bean id="paymentDetailDao" class="com.easylife.property.management.dao.impl.PaymentDetailDaoImpl" autowire="byName">
+	</bean>
+	<bean id="userAndHouseDao" class="com.easylife.property.management.dao.impl.UserAndHouseDaoImpl" autowire="byName">
+	</bean>
+	<bean id="repairDao" class="com.easylife.property.management.dao.impl.RepairDaoImpl" autowire="byName">
+	</bean>
+</beans>

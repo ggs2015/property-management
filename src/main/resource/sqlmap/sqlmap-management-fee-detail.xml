@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="ManagementFeeDetailModel">
+	<typeAlias alias="ManagementFeeDetailModel" type="com.easylife.property.management.model.ManagementFeeDetailModel"/>
+	<typeAlias alias="HistoryPaidInfoVo" type="com.easylife.property.management.vo.HistoryPaidInfoVo"/>
+	<typeAlias alias="PaidStatisticsVo" type="com.easylife.property.management.vo.PaidStatisticsVo"/>
+	<typeAlias alias="UnpaidStatisticsVo" type="com.easylife.property.management.vo.UnpaidStatisticsVo"/>
+	
+	<resultMap class="ManagementFeeDetailModel" id="ManagementFeeDetailModelMap">
+		<result column="id" property="id"/>
+		<result column="house_id" property="houseId"/>
+		<result column="year" property="year"/>
+		<result column="month" property="month"/>
+		<result column="need_pay_management_fee" property="needPayManagementFee"/>
+		<result column="is_paid" property="isPaid"/>
+		<result column="is_wrote_receipt" property="isWroteReceipt"/>
+	</resultMap>
+	
+	<resultMap class="HistoryPaidInfoVo" id="HistoryPaidInfoVoMap">
+		<result column="house_number" property="houseNumber"/>
+		<result column="create_time" property="createTime"/>
+		<result column="year" property="year"/>
+		<result column="month" property="month"/>
+		<result column="pay_method_type" property="payMethodType"/>
+		<result column="end_user_id" property="endUserId"/>
+	</resultMap>
+
+	<resultMap class="ManagementFeeDetailModel" id="statisticMap">
+		<result column="id" property="id"/>
+		<result column="house_id" property="houseId"/>
+		<result column="year" property="year"/>
+		<result column="month" property="month"/>
+		<result column="need_pay_management_fee" property="needPayManagementFee"/>
+		<result column="is_paid" property="isPaid"/>
+		<result column="pay_method_type" property="payMethodType"/>
+	</resultMap>
+	
+	<resultMap class="PaidStatisticsVo" id="PaidStatisticsVoMap">
+		<result column="building" property="building"/>
+		<result column="house_number" property="houseNumber"/>
+		<result column="create_time" property="createTime"/>
+		<result column="end_user_id" property="endUserId"/>
+		<result column="need_pay_management_fee" property="needPayManagementFee"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="pay_method_type" property="payMethodType"/>
+	</resultMap>
+	
+	<resultMap class="UnpaidStatisticsVo" id="UnpaidStatisticsVoMap">
+		<result column="building" property="building"/>
+		<result column="house_number" property="houseNumber"/>
+		<result column="need_pay_management_fee" property="needPayManagementFee"/>
+	</resultMap>
+	
+	<select id="getManagementFeePaidInfo" parameterClass="map" resultMap="ManagementFeeDetailModelMap">
+		select id,house_id,year,month,need_pay_management_fee,is_paid,is_wrote_receipt
+			from management_fee_detail
+			where house_id = #houseId#
+			<isNotEmpty prepend="AND" property="isPaid" >
+	           is_paid = #isPaid#
+		   </isNotEmpty>
+		   <isNotEmpty prepend="AND" property="isWroteReceipt" >
+	           is_wrote_receipt = #isWroteReceipt#
+		   </isNotEmpty>
+		   <isNotEmpty prepend="AND" property="year" >
+	           year = #year#
+		   </isNotEmpty>
+		   <isNotEmpty prepend="AND" property="month" >
+	           month = #month#
+		   </isNotEmpty>
+		   <isNotEmpty prepend="AND" property="compareMonth" >
+	           <![CDATA[ month <= #compareMonth# ]]>
+		   </isNotEmpty>
+			and is_deleted = 0
+			order by year, month ASC;
+	</select>
+	
+	<select id="getUnpaidInfoByHouseId" parameterClass="map" resultMap="ManagementFeeDetailModelMap">
+		select id,house_id,year,month,need_pay_management_fee,is_paid,is_wrote_receipt
+			from management_fee_detail
+			where house_id = #houseId#
+			<isNotEmpty prepend="AND" property="isPaid" >
+	           is_paid = #isPaid#
+		   </isNotEmpty>
+			and is_deleted = 0
+			order by year, month ASC
+			limit #size#;
+	</select>
+	
+	<!-- 缴费 -->
+	<update id="updateFeeDetail" parameterClass="long">
+		update management_fee_detail
+			set is_paid = 0,real_pay_management_fee = need_pay_management_fee,update_time=NOW()
+			where id = #id#
+				and is_paid = 1
+				and is_deleted = 0
+	</update>
+	
+	<!-- 批量缴费 -->
+	<update id="updateManagementFeePaidInfoByIds" parameterClass="list">
+		update management_fee_detail
+			set is_paid = 0,real_pay_management_fee = need_pay_management_fee,update_time=NOW()
+			where id in 
+				<iterate conjunction="," open="(" close=")">
+  					#ids[]#
+ 				</iterate>
+				and is_paid = 1
+				and is_deleted = 0
+	</update>
+	
+	<!-- 开发票 -->
+	<update id="wroteReceipt" parameterClass="map">
+		update management_fee_detail
+			set is_wrote_receipt = 0, update_time=NOW()
+			where house_id = #houseId#
+				and year = #year#
+				and month = #month#
+				and is_paid = 0
+				and is_wrote_receipt = 1
+				and is_deleted = 0
+	</update>
+	<!-- <insert id="insertUser" parameterClass="endUserInfo">
+		insert into end_user(user_name,user_sex,user_phone,user_role,identity_card_no,create_time,is_deleted)
+		values(#userName#,#sex#,#userPhone#,#roleId#,#identityCardId#,NOW(),0)
+		<selectKey resultClass="long" keyProperty="id">  
+      	  SELECT LAST_INSERT_ID() AS id 
+		</selectKey>;
+	</insert> -->
+
+	<select id="getHistoryPaidInfo" parameterClass="map" resultMap="HistoryPaidInfoVoMap">
+		select m.month,m.year,h.house_number,p.pay_method_type,p.create_time,p.end_user_id
+			from management_fee_detail m
+			inner join payment_detail p on m.id = p.management_fee_detail_id
+			inner join house_info h on m.house_id = h.id
+			where m.house_id = #houseId#
+			<isNotEmpty prepend="AND" property="isPaid" >
+	           m.is_paid = #isPaid#
+		   </isNotEmpty>
+			and m.is_deleted = 0
+			order by year, month ASC;
+	</select>
+	
+	<select id="getManagementFeeDetailByHouseIds" parameterClass="map" resultMap="statisticMap">
+		select m.id,m.house_id,m.year,m.month,m.need_pay_management_fee,m.is_paid,p.pay_method_type
+			from management_fee_detail m
+			left join payment_detail p on m.id = p.management_fee_detail_id
+			where m.house_id in
+				<iterate property="houseIds" conjunction="," open="(" close=")">
+  					#houseIds[]#
+ 				</iterate>
+		   <isNotEmpty prepend="AND" property="year" >
+	           m.year = #year#
+		   </isNotEmpty>
+		   <isNotEmpty prepend="AND" property="month" >
+	           m.month = #month#
+		   </isNotEmpty>
+			and m.is_deleted = 0
+			order by m.year, m.month ASC;
+	</select>
+	
+	<select id="getStatisticsPaidInfo" parameterClass="map" resultMap="PaidStatisticsVoMap">
+		SELECT h.building,h.house_number,p.create_time,p.end_user_id,p.pay_method_type,m.need_pay_management_fee,p.pay_amount 
+		FROM management_fee_detail m
+		INNER JOIN house_info h ON m.house_id = h.id
+		INNER JOIN payment_detail p ON m.id = p.management_fee_detail_id
+		WHERE m.is_paid = 0 
+		AND h.residential_area_id = #residentialAreaId#
+		<isNotEmpty prepend="AND" property="payMethodType" >
+	           p.pay_method_type = #payMethodType#
+		</isNotEmpty>
+		<![CDATA[ AND p.create_time >= #startTime# ]]>
+		<![CDATA[ AND p.create_time <= #endTime# ]]>
+		ORDER BY p.create_time DESC
+	</select>
+	
+	<select id="getStatisticsUnpaidInfo" parameterClass="map" resultMap="UnpaidStatisticsVoMap">
+		SELECT h.building,h.house_number,m.need_pay_management_fee
+		 FROM management_fee_detail m
+		INNER JOIN house_info h ON m.house_id = h.id
+		WHERE m.is_paid = 1
+		AND h.residential_area_id = #residentialAreaId#
+		AND m.year = #year#
+		<![CDATA[ AND m.month <= #month# ]]>
+	</select>
+</sqlMap>
